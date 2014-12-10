@@ -1,16 +1,49 @@
-a = prdataset(im_fill_norm(prnist([0:9], 1:200), 16, 0));
-% t = prdataset(im_fill_norm(prnist([0:9], 201:1000), 16, 0));
+a = prdataset(im_gauss(im_fill_norm(prnist(0:9, 1:500), 16, 0)));
+t = prdataset(im_gauss(im_fill_norm(prnist(0:9, 501:1000), 16, 0)));
+
+% u = scalem([], 'variance') * pcam([], 0.9) * knnc([],1);
+% w = a*u;
+% err = t*w*testc;
+
+w = scalem(a, 'variance') * pcam(a, 0.95) * parzenc;
+[ERR,STDS] = prcrossval(a, w, 10, 3);
+
+% error = t *  * testc;
+
+% testc(t, a*parzenc);
+
+% e = cleval(a, parzenc, 1:100:500, 5);
+% [ERR,STDS] = prcrossval(a, scalem([], 'variance') * pcam([], 0.95) * parzenc, 4, 3);
+
+% t = prdataset(im_fill_norm(prnist([0:9], 501:1000), 16, 0));
 % a = prdataset(im_resize(prnist([0 2:9], 1:200),[8 8]));
 % t = prdataset(im_resize(prnist([0 2:9], 201:1000), [8 8]));
 % 
 % show(a)
+% error = [];
 
-% v = a * scalem([], 'variance') * pcam([], 0) 
-% plot(pcam(a*scalem('variance'),0))
+% for i = 1:10
+%     [a,t] = gendat(data, 0.5);
+%     u = scalem([], 'variance') * pcam([], 0.9) * qdc;%adaboostc([], qdc, 10);
+%     w = a*u;
+%     err = t*w*testc;
+%     error = [error; err];
+% end
+% 
+% errorbar(mean(error), std(error,0,2))
 
-% u = scalem([], 'variance') * pcam([], 0.9) * parzenc;%{ldc, parzenc, knnc([],1), svc(proxm('p',3)), bpxnc([],[300 300])};
-% w = a*u;
-% error = t*w*testc
+% [ERR,STDS] = prcrossval(a, scalem([], 'variance') * pcam([], 0.9) * qdc, 10, 5);
+
+% cleval(a, scalem([], 'variance') * pcam([], 0.9) * qdc, 200:20:500, t)
+
+% [w,n] = pcam(a, 0.90);
+
+% confmat(t*w);
+
+% u = scalem([], 'variance') * pcam([], 0.9) * adaboostc([], qdc, 10);
+% e = cleval(a, u, 200:50:500, 5);
+% plote(e)
+
 
 
 % Show densities
