@@ -1,12 +1,16 @@
 extend_path
 
-% get NIST digit images as prdatafile
-images = prnist(0:9, 1:1000);
-% remove speckles with area < 4
-images = images*im_filter_speckles(4);
+% Generate 200 random indices from 1 - 1000
+selection = randperm(1000, 200);
 
-d = prdataset(im_resize(images*im_rot_norm*im_box(1)*im_gauss, [16 16]));
+% Extract images from prnist dataset
+images = prnist(0:9, selection);
 
-% crossval pcam 25, 4 folds, 10000 objs gave 0.023 error rate
-prcrossval(d*pcam(d, 30), parzenc, 2)
+% Preprocess images
+d = preprocess_rot_stretch(images);
 
+% Train classifier
+w = d*(pcam([], .9)*parzenc);
+
+% Obtain classifier error rate
+nist_eval('preprocess_rot_stretch', w, 100)

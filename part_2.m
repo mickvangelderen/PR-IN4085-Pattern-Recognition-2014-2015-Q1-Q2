@@ -1,30 +1,16 @@
 extend_path
 
-% all_images  = im_fill_norm(prnist(0:9, 1:1000), 16, 0);
-% d = prdataset(all_images);
-% nclasses = length(d.lablist{1});
+% Generate 10 random indices from 1 - 1000
+selection = randperm(1000, 10);
 
-% === scaling vs no scaling before pca ===
-% s = pcam(d*scalem(d, 'variance'), .99);
-% e1 = clevalf(d, knnc([], 1), 1:10:size(s,2), ones(1, nclasses)*10, 3);
-% s = pcam(d, .99);
-% e2 = clevalf(d, knnc([], 1), 1:10:size(s,2), ones(1, nclasses)*10, 3);
-% plote({e1,e2});
-% legend({'scaling','no-scaling'});
+% Extract images from prnist dataset
+images = prnist(0:9, selection);
 
-nreps = 10;
+% Preprocess images
+d = preprocess_rot_stretch(images);
 
-classifiers = {ldc, knnc([], 1), parzenc, svc};
-nclassifiers = length(classifiers);
+% Train classifier
+w = d*(pcam([], .8)*parzenc);
 
-performances = zeros(nreps, nclassifiers);
- 
-s = pcam(d, 30);
-for i = 1:nreps
-    % randomly pick 10 obj from all classes and put it in a, the rest in t
-    [a, t] = gendat(d, ones(1, nclasses)*10);
-    performances(i,:) = cell2mat(testc(t*s, a*s*classifiers));
-    performances(i,:)
-end
-
-errorbar(1:nclassifiers, mean(performances), std(performances));
+% Obtain classifier error rate
+nist_eval('preprocess_rot_stretch', w, 100)
