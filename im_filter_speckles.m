@@ -1,4 +1,6 @@
 % IM_FILTER_SPECKLES
+%
+%
 function b = im_filter_speckles(varargin)
     argin = shiftargin(varargin,'scalar');
     argin = setdefaults(argin, [], 4);

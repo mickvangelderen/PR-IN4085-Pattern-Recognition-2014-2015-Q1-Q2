@@ -1,9 +1,9 @@
 % IM_ROT_NORM
 % normalize images by rotating them upwards if eccentricity and orientation
 % are between bounds
-function b = mapping_example(varargin)
+function b = im_rot_norm(varargin)
     argin = shiftargin(varargin,'scalar');
-    argin = setdefaults(argin, [], 0.5);
+    argin = setdefaults(argin, [], 0.8, 50);
     
     if mapping_task(argin, 'definition')
         b = define_mapping(argin, 'fixed');
@@ -11,7 +11,7 @@ function b = mapping_example(varargin)
         return
     end
     
-    [a, scale] = deal(argin{:});
+    [a, min_eccentricity, max_rot] = deal(argin{:});
     
     if isdataset(a)
         error('Command cannot be used for datasets as it may change image size')
@@ -31,13 +31,13 @@ function b = mapping_example(varargin)
     props = regionprops(a, {'eccentricity', 'orientation'});
     ecc = props.Eccentricity;
     ori = props.Orientation;
-    
+        
     % bring orientation range from [-90, 90] to [0, 180]
     if ori < 0; ori = ori + 180; end
     
     % check if eccentricity is high enough and angle doesn't deviate from the up
     % direction too much. 
-    if ecc > .8 && abs(ori - 90) < 50
+    if ecc > min_eccentricity && abs(ori - 90) < max_rot
         b = imrotate(a, 90 - ori, 'bilinear', 'loose');
     else
         b = a;
