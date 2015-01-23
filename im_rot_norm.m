@@ -7,10 +7,10 @@ function b = im_rot_norm(varargin)
     
     if mapping_task(argin, 'definition')
         b = define_mapping(argin, 'fixed');
-        b = setname(b, 'Mapping Example');
+        b = setname(b, 'Ellipse Normalize Rotation');
         return
     end
-    
+
     [a, min_eccentricity, max_rot] = deal(argin{:});
     
     if isdataset(a)
@@ -19,7 +19,7 @@ function b = im_rot_norm(varargin)
     
     if isdatafile(a)
         isobjim(a); % assert that a contains image objects
-        b = filtim(a, mfilename, argin{2:end});
+        b = filtim(a, mfilename, argin(2:end));
         return
     end
     
