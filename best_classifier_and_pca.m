@@ -1,9 +1,11 @@
 extend_path
 
 % classifiers = {nmc, ldc, qdc, fisherc, loglc, knnc([], 1), parzenc};
-classifiers = {ldc, qdc};
+classifiers = {nmc, ldc, qdc};
 objects_per_class = 200;
 max_error = 0.05;
+nrep = 2;
+pca_sizes = [1 10 20 30 40 50 60 80 100 150 200 256];
 
 % Get dataset, split into training and test
 images = prnist(0:9, 1:1000);
@@ -14,52 +16,38 @@ d = preprocess_fill(images);
 err = [];
 nfeatures = size(trn,2);
 nclasses = length(d.lablist{1});    
+nclassifiers = size(classifiers,2);
+
+for n = 1:nrep
+    [trn, tst] = gendat(d, ones(1, nclasses) * objects_per_class);
+
+    for pca_size = pca_sizes
+        u = pcam([], pca_size) * classifiers; % no scaling
+        w = trn * u;
+        e = tst * w * testc;
     
-[trn, tst] = gendat(d, ones(1, nclasses) * objects_per_class);
-
-for pca_size = 1:20:nfeatures
-    u = pcam([], pca_size) * classifiers; % no scaling
-    w = trn * u;
-    e = tst * w * testc;
-
-    err = [err; pca_size e];
+        for i = 1:size(e,2)
+            err(pca_size, i, n) = e(i);
+        end
+    end
 end
 
-% Make graph with errors of different classifiers plotted against the PCA
-% components
-plot(err(:,1), err(:,2:end));
-line([1 nfeatures], [max_error max_error]);
+% Covert error matrix to a more matlab style-array
+means = [];
+stds = [];
 
- % errorbar(1:40:nfeatures, mean(err,3), std(err,0,3))
-% errorbar(1:nclassifiers, mean(err), std(err));
-% legend('nmc', 'ldc', 'qdc', 'fisherc', 'loglc', '1-NN', 'parzenc');
+for pca_size = pca_sizes
+    means = [means; pca_size mean(err(pca_size,:,:),3)];
+    stds  = [stds; pca_size std(err(pca_size,:,:),0,3)];
+end
 
-% 
-% images = prnist(0:9, 1:100);
-% d = preprocess_fill(images);
-% nclasses = length(d.lablist{1});
-% 
-% % === scaling vs no scaling before pca ===
-% % s = pcam(d*scalem(d, 'variance'), .99);
-% % e1 = clevalf(d, knnc([], 1), 1:10:size(s,2), ones(1, nclasses)*10, 3);
-% % s = pcam(d, .99);
-% % e2 = clevalf(d, knnc([], 1), 1:10:size(s,2), ones(1, nclasses)*10, 3);
-% % plote({e1,e2});
-% % legend({'scaling','no-scaling'});
-% 
-% nreps = 10;
-% 
-% classifiers = {ldc, knnc([], 1), parzenc, svc};
-% nclassifiers = length(classifiers);
-% 
-% performances = zeros(nreps, nclassifiers);
-% 
-% s = pcam(d, 30);
-% for i = 1:nreps
-%     % randomly pick 10 obj from all classes and put it in a, the rest in t
-%     [a, t] = gendat(d, ones(1, nclasses)*10);
-%     performances(i,:) = cell2mat(testc(t*s, a*s*classifiers));
-%     performances(i,:)
-% end
-% 
-% errorbar(1:nclassifiers, mean(performances), std(performances));
+hold on;
+    errorbar(repmat(pca_sizes,nclassifiers,1)', means(:,2:end), stds(:,2:end))
+    legend('nmc', 'ldc', 'qdc', 'fisherc', 'loglc', '1-NN', 'parzenc');
+    
+    plot([min(means(:,1)) max(means(:,1))], [max_error max_error], ':b');
+    
+    axis([min(pca_sizes) max(pca_sizes) 0 1]);
+    xlabel('Number of PCA Components');
+    ylabel('Classification error');
+hold off;
