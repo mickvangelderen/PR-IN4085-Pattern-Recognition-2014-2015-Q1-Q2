@@ -1,7 +1,6 @@
 extend_path
 
-% classifiers = {nmc, ldc, qdc, fisherc, loglc, knnc([], 1), parzenc};
-classifiers = {nmc, ldc, qdc};
+classifiers = {nmc, ldc, qdc, fisherc, loglc, knnc([], 1), parzenc};
 objects_per_class = 200;
 max_error = 0.05;
 nrep = 2;
