@@ -50,19 +50,19 @@ for i = 1:nmappings
     fprintf('%d/%d error: %f\n', i, nmappings, errors(i));
 end
 
-a = prdataset(im_fill_norm(im_filter_speckles(20)*train_images, side, 0));
-t = prdataset(im_fill_norm(im_filter_speckles(20)*test_images, side, 0));
+a = prdataset(im_fill_norm(train_images*im_filter_speckles(20), side, 0));
+t = prdataset(im_fill_norm(test_images*im_filter_speckles(20), side, 0));
 w = pcam([], .9)*parzenc;
 identityError20 = testc(t, a*w)
 
-a = prdataset(im_fill_norm(im_filter_speckles(40)*train_images, side, 0));
-t = prdataset(im_fill_norm(im_filter_speckles(40)*test_images, side, 0));
+a = prdataset(im_fill_norm(train_images*im_filter_speckles(40), side, 0));
+t = prdataset(im_fill_norm(test_images*im_filter_speckles(40), side, 0));
 w = pcam([], .9)*parzenc;
 identityError40 = testc(t, a*w)
 
 [bestError, bestIndex] = min(errors)
 bestTitle = mappings{bestIndex, 1}
-errorsEccRot = reshape(errors, 4, 4)
+errorsEccRot = reshape(errors, 3, [])
 
 errorsImg = (errorsEccRot - min(errors))./(max(errors) - min(errors));
 imshow(imresize(errorsImg, 40, 'box'));
