@@ -3,7 +3,7 @@
 % are between bounds
 function b = im_rot_norm(varargin)
     argin = shiftargin(varargin,'scalar');
-    argin = setdefaults(argin, [], 0.8, 50);
+    argin = setdefaults(argin, [], 0.95, 50);
     
     if mapping_task(argin, 'definition')
         b = define_mapping(argin, 'fixed');

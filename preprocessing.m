@@ -3,7 +3,7 @@ extend_path
 % get NIST digit images as prdatafile
 images = prnist(0:9, 1:20);
 % remove speckles with area < 4
-images = images*im_filter_speckles(4);
+images = images*im_filter_speckles(20);
 
 da = prdataset(im_fill_norm(images, 16, 0));
 db = prdataset(im_fill_norm(images*im_rot_norm*im_box(0), 16, 0));
