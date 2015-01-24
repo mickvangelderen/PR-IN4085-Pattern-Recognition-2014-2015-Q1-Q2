@@ -3,7 +3,7 @@
 %
 function b = im_filter_speckles(varargin)
     argin = shiftargin(varargin,'scalar');
-    argin = setdefaults(argin, [], 4);
+    argin = setdefaults(argin, [], 30);
     
     if mapping_task(argin, 'definition')
         b = define_mapping(argin, 'fixed');
